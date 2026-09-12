@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sigma Lab Signage PDF Generator</title>
+  <style>
+    :root{--navy:#123f54;--teal:#0d7b77;--ice:#eaf4f5;--line:#cbdde2;--text:#24343c;--muted:#687982;--amber:#fff4cc;--red:#b33a3a}
+    *{box-sizing:border-box}
+    body{margin:0;background:#f4f7f8;color:var(--text);font-family:Arial,"Segoe UI",sans-serif}
+    .top{background:var(--navy);color:#fff;padding:20px 24px}
+    .top-inner{max-width:1180px;margin:auto;display:flex;align-items:center;gap:14px}
+    .top img{width:42px;height:48px;object-fit:contain;background:#fff;border-radius:7px;padding:3px}
+    .top h1{font-size:22px;margin:0 0 4px}.top p{margin:0;color:#d8e9ed;font-size:13px}
+    main{max-width:1180px;margin:20px auto;padding:0 18px 30px}
+    .panel{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 4px 20px #123f5410;padding:18px;margin-bottom:16px}
+    .controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .file{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px dashed var(--teal);border-radius:10px;background:#f8fcfc;font-weight:700}
+    input[type=file]{max-width:360px}
+    button{border:0;border-radius:9px;padding:11px 17px;font:inherit;font-weight:800;cursor:pointer;background:var(--navy);color:white}
+    button.secondary{background:var(--teal)}button:disabled{opacity:.42;cursor:wait}
+    #status{margin-top:12px;min-height:20px;color:var(--muted);font-size:13px;line-height:1.6}
+    .rules{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+    .rule{background:var(--ice);border-right:4px solid var(--teal);padding:10px 12px;border-radius:8px;font-size:12px;line-height:1.55}
+    .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+    .section-title h2{font-size:17px;color:var(--navy);margin:0}
+    .count{background:var(--ice);color:var(--navy);border-radius:999px;padding:5px 10px;font-size:12px;font-weight:800}
+    #pages{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .page-card{border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:#fff}
+    .page-card.off{opacity:.52;background:#f5f5f5}.page-card strong{display:block;color:var(--navy);margin-bottom:4px}
+    .meta{font-size:12px;color:var(--muted)}
+    .options{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+    select,.copies{border:1px solid var(--line);border-radius:7px;padding:7px;background:#fff;font:inherit;font-size:12px}
+    .copies{width:62px;text-align:center}.include{width:18px;height:18px;accent-color:var(--teal)}
+    .empty{text-align:center;color:var(--muted);padding:25px;border:1px dashed var(--line);border-radius:10px;grid-column:1/-1}
+    .note{font-size:12px;line-height:1.7;color:var(--muted)}
+    .error{color:var(--red)!important}
+    @media(max-width:800px){.rules,#pages{grid-template-columns:1fr}.top-inner{align-items:flex-start}.page-card{grid-template-columns:auto 1fr}.options{grid-column:2;justify-content:flex-start}}
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <img src="data:image/jpeg;base64,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" alt="Sigma logo">
+      <div>
+        <h1>مولد لوحات مختبر سيجما</h1>
+        <p>Sigma for Industry &amp; Mining - Laboratory Signage PDF Generator</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <div class="controls">
+        <label class="file">اختر نموذج Excel <input id="file" type="file" accept=".xlsx"></label>
+        <button id="generate" class="secondary" disabled>إنشاء PDF الجاهز للطباعة</button>
+      </div>
+      <div id="status">اختر ملف Sigma_Lab_Signage_Template.xlsx. تتم المعالجة كاملة داخل جهازك ولا يُرفع الملف إلى أي مكان.</div>
+      <div class="rules">
+        <div class="rule"><b>كل Worksheet مستقل</b><br>لن يختلط أي جدول مع جدول آخر.</div>
+        <div class="rule"><b>الاتجاه المناسب</b><br>الجداول الطويلة طولي، واللوحات الإرشادية عرضي وفي المنتصف.</div>
+        <div class="rule"><b>تكرار اللوحات</b><br>قيمة Copies تحدد عدد النسخ داخل PDF.</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-title"><h2>الصفحات التي سيولدها الملف</h2><span id="count" class="count">0 صفحة</span></div>
+      <div id="pages"><div class="empty">لم يتم اختيار ملف بعد.</div></div>
+    </section>
+
+    <section class="panel note">
+      لتعديل المحتوى: افتح نموذج Excel، وانسخ أقرب Worksheet مشابه، ثم عدّل الخلايا الصفراء والجدول فقط. استخدم TABLE للجداول وSIGN للوحات المناطق. يمكن تغيير الاتجاه وعدد النسخ هنا قبل إنشاء PDF من دون تعديل Excel.
+    </section>
+  </main>
+
+  <script>
+  "use strict";
+  const SIGMA_LOGO_B64="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";
+  const $=s=>document.querySelector(s);
+  const enc=new TextEncoder(),dec=new TextDecoder("utf-8");
+  const COLORS={navy:"#123f54",teal:"#0d7b77",ice:"#eaf4f5",line:"#cbdde2",text:"#24343c",muted:"#687982",white:"#ffffff",zebra:"#f6f9fa"};
+  let pages=[];
+
+  function setStatus(message,error=false){const el=$("#status");el.textContent=message;el.classList.toggle("error",error)}
+  function xmlDecode(s){return String(s??"").replace(/&#x([0-9a-f]+);/gi,(_,x)=>String.fromCodePoint(parseInt(x,16))).replace(/&#(\d+);/g,(_,x)=>String.fromCodePoint(Number(x))).replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&amp;/g,"&")}
+  function normalizeTarget(target){target=String(target||"").replace(/\\/g,"/");if(target.startsWith("/"))return target.slice(1);while(target.startsWith("../"))target=target.slice(3);return target.startsWith("xl/")?target:`xl/${target}`}
+  function cellRC(ref){const m=String(ref).match(/^([A-Z]+)(\d+)$/);if(!m)return null;let col=0;for(const ch of m[1])col=col*26+ch.charCodeAt(0)-64;return{row:Number(m[2]),col}}
+
+  class ZipReader{
+    constructor(buffer){this.buffer=buffer;this.view=new DataView(buffer);this.entries=new Map();this.parse()}
+    u16(o){return this.view.getUint16(o,true)}u32(o){return this.view.getUint32(o,true)}
+    parse(){let e=-1;for(let i=this.buffer.byteLength-22;i>=Math.max(0,this.buffer.byteLength-65557);i--){if(this.u32(i)===0x06054b50){e=i;break}}if(e<0)throw Error("ملف Excel غير صالح");const count=this.u16(e+10),start=this.u32(e+16);let p=start;for(let i=0;i<count;i++){if(this.u32(p)!==0x02014b50)throw Error("تعذر قراءة بنية ملف Excel");const method=this.u16(p+10),cs=this.u32(p+20),us=this.u32(p+24),nl=this.u16(p+28),el=this.u16(p+30),cl=this.u16(p+32),lo=this.u32(p+42),name=dec.decode(new Uint8Array(this.buffer,p+46,nl));this.entries.set(name,{method,cs,us,lo});p+=46+nl+el+cl}}
+    async bytes(name){const e=this.entries.get(name);if(!e)throw Error(`الجزء ${name} غير موجود في Excel`);const nl=this.u16(e.lo+26),el=this.u16(e.lo+28),start=e.lo+30+nl+el,bytes=new Uint8Array(this.buffer,start,e.cs);if(e.method===0)return bytes;if(e.method===8){const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));return new Uint8Array(await new Response(stream).arrayBuffer())}throw Error(`ضغط ZIP غير مدعوم: ${e.method}`)}
+    async text(name){return dec.decode(await this.bytes(name))}
+  }
+
+  function parseSharedStrings(xml){if(!xml)return[];const doc=new DOMParser().parseFromString(xml,"application/xml");return [...doc.getElementsByTagNameNS("*","si")].map(si=>[...si.getElementsByTagNameNS("*","t")].map(t=>t.textContent||"").join(""))}
+  function parseRelationships(xml){const doc=new DOMParser().parseFromString(xml,"application/xml"),map=new Map();for(const rel of doc.getElementsByTagNameNS("*","Relationship"))map.set(rel.getAttribute("Id"),rel.getAttribute("Target"));return map}
+  function cellValue(cell,strings){const type=cell.getAttribute("t"),v=cell.getElementsByTagNameNS("*","v")[0];if(type==="inlineStr")return [...cell.getElementsByTagNameNS("*","t")].map(t=>t.textContent||"").join("");if(!v)return"";const raw=v.textContent||"";if(type==="s")return strings[Number(raw)]??"";if(type==="b")return raw==="1";if(type==="str")return raw;const n=Number(raw);return Number.isFinite(n)?n:raw}
+
+  async function readTemplate(file){
+    const zip=new ZipReader(await file.arrayBuffer());
+    const strings=zip.entries.has("xl/sharedStrings.xml")?parseSharedStrings(await zip.text("xl/sharedStrings.xml")):[];
+    const workbookDoc=new DOMParser().parseFromString(await zip.text("xl/workbook.xml"),"application/xml");
+    const rels=parseRelationships(await zip.text("xl/_rels/workbook.xml.rels"));
+    const models=[];
+    for(const sheetNode of workbookDoc.getElementsByTagNameNS("*","sheet")){
+      const sheetName=sheetNode.getAttribute("name")||"Sheet";
+      if(sheetName.trim().toLowerCase()==="guide")continue;
+      const rid=sheetNode.getAttribute("r:id")||sheetNode.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships","id");
+      const target=normalizeTarget(rels.get(rid));
+      if(!zip.entries.has(target))continue;
+      const doc=new DOMParser().parseFromString(await zip.text(target),"application/xml"),cells=new Map();
+      for(const cell of doc.getElementsByTagNameNS("*","c")){
+        const rc=cellRC(cell.getAttribute("r"));if(!rc)continue;cells.set(`${rc.row}:${rc.col}`,cellValue(cell,strings));
+      }
+      const get=(r,c)=>cells.get(`${r}:${c}`)??"";
+      const type=String(get(2,2)||"").trim().toUpperCase();
+      if(type!=="TABLE"&&type!=="SIGN")continue;
+      const title=String(get(3,2)||sheetName).trim(),subtitle=String(get(4,2)||"").trim();
+      const orientation=String(get(5,2)||"AUTO").trim().toUpperCase();
+      const copies=Math.max(1,Math.min(50,Math.round(Number(get(6,2))||1)));
+      let data=[];
+      if(type==="TABLE"){
+        let maxRow=0,maxCol=0;
+        for(const key of cells.keys()){const [r,c]=key.split(":").map(Number);if(r>=9&&String(get(r,c)).trim()!==""){maxRow=Math.max(maxRow,r);maxCol=Math.max(maxCol,c)}}
+        if(maxRow>=9&&maxCol){for(let r=9;r<=maxRow;r++){const row=[];for(let c=1;c<=maxCol;c++)row.push(get(r,c));if(row.some(v=>String(v??"").trim()!==""))data.push(row)}while(data.length&&data[data.length-1].every(v=>String(v??"").trim()===""))data.pop()}
+      }
+      models.push({sheetName,type,title,subtitle,orientation:["AUTO","PORTRAIT","LANDSCAPE"].includes(orientation)?orientation:"AUTO",copies,data,include:true});
+    }
+    if(!models.length)throw Error("لم أجد صفحات TABLE أو SIGN. استخدم نموذج Sigma المرفق ولا تغيّر أسماء الحقول A2:A6.");
+    return models;
+  }
+
+  function autoOrientation(model){if(model.orientation!=="AUTO")return model.orientation;if(model.type==="SIGN")return"LANDSCAPE";const rows=Math.max(0,model.data.length-1),cols=Math.max(1,...model.data.map(r=>r.length));if(cols>=6)return"LANDSCAPE";if(rows>26)return"PORTRAIT";return"LANDSCAPE"}
+  function estimatePages(model){if(!model.include)return 0;if(model.type==="SIGN")return model.copies;const rows=Math.max(1,model.data.length-1),orientation=autoOrientation(model),perPage=orientation==="PORTRAIT"?42:24;return Math.ceil(rows/perPage)*model.copies}
+  function updateCount(){const count=pages.reduce((sum,p)=>sum+estimatePages(p),0);$("#count").textContent=`${count} صفحة تقريبًا`}
+  function renderCards(){const host=$("#pages");host.innerHTML="";pages.forEach((p,index)=>{const card=document.createElement("div");card.className="page-card";card.innerHTML=`<input class="include" type="checkbox" ${p.include?"checked":""} aria-label="تضمين الصفحة"><div><strong>${escapeHtml(p.title||p.sheetName)}</strong><div class="meta">${escapeHtml(p.sheetName)} - ${p.type==="SIGN"?"لوحة إرشادية":`${Math.max(0,p.data.length-1)} صف، ${Math.max(0,...p.data.map(r=>r.length))} أعمدة`}</div></div><div class="options"><select class="orientation"><option value="AUTO">تلقائي</option><option value="PORTRAIT">طولي</option><option value="LANDSCAPE">عرضي</option></select><label>نسخ <input class="copies" type="number" min="1" max="50" value="${p.copies}"></label></div>`;const include=card.querySelector(".include"),orientation=card.querySelector(".orientation"),copies=card.querySelector(".copies");orientation.value=p.orientation;include.addEventListener("change",()=>{p.include=include.checked;card.classList.toggle("off",!p.include);updateCount()});orientation.addEventListener("change",()=>{p.orientation=orientation.value;updateCount()});copies.addEventListener("input",()=>{p.copies=Math.max(1,Math.min(50,Math.round(Number(copies.value)||1)));updateCount()});host.appendChild(card)});updateCount()}
+  function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+  function containsArabic(text){return/[\u0600-\u06ff]/.test(String(text||""))}
+  function fontString(size,bold=false){return`${bold?"700":"400"} ${size}px Arial, sans-serif`}
+  function textLines(ctx,value,maxWidth,size,bold=false){const text=String(value??"").trim();if(!text)return[""];ctx.font=fontString(size,bold);const words=text.split(/\s+/),lines=[];let current="";for(const word of words){const candidate=current?`${current} ${word}`:word;if(ctx.measureText(candidate).width<=maxWidth||!current){current=candidate}else{lines.push(current);current=word;while(ctx.measureText(current).width>maxWidth&&current.length>1){let cut=current.length-1;while(cut>1&&ctx.measureText(current.slice(0,cut)).width>maxWidth)cut--;lines.push(current.slice(0,cut));current=current.slice(cut)}}}if(current)lines.push(current);return lines.length?lines:[""]}
+  function roundedRect(ctx,x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r);if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.stroke()}}
+  function loadImage(src){return new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=src})}
+  function pageSize(orientation){return orientation==="LANDSCAPE"?{w:841.89,h:595.28}:{w:595.28,h:841.89}}
+
+  function computeTableLayout(model,orientation){
+    const scratch=document.createElement("canvas"),ctx=scratch.getContext("2d"),{w,h}=pageSize(orientation),data=model.data.length?model.data:[["Item"]],cols=Math.max(1,...data.map(r=>r.length));
+    const fontSize=cols>=6?7.7:cols>=5?8.4:9.2,lineHeight=fontSize*1.32,availW=w-64,raw=[];
+    for(let c=0;c<cols;c++){let max=40;for(const row of data){ctx.font=fontString(fontSize,c===0&&row===data[0]);max=Math.max(max,Math.min(310,ctx.measureText(String(row[c]??"")).width+18))}const header=String(data[0]?.[c]??"").toLowerCase();if(header==="#")max=38;if(/quantity|unit|pieces|total|volume|weight|assay|bottels|copies/.test(header))max=Math.min(max,88);raw.push(max)}
+    const rawTotal=raw.reduce((a,b)=>a+b,0),widths=raw.map(v=>v/rawTotal*availW);
+    const itemIndex=(data[0]||[]).findIndex(v=>/item|chemical|name|area/i.test(String(v)));if(itemIndex>=0&&cols>1){const target=Math.max(widths[itemIndex],availW*(cols>=5?.43:.62)),extra=target-widths[itemIndex];if(extra>0){const otherTotal=availW-widths[itemIndex];for(let c=0;c<cols;c++)if(c!==itemIndex)widths[c]=Math.max(34,widths[c]-extra*(widths[c]/otherTotal));widths[itemIndex]=availW-widths.reduce((s,v,i)=>s+(i===itemIndex?0:v),0)}}
+    const rows=data.slice(1).map((row,index)=>{const lines=[];let height=22;for(let c=0;c<cols;c++){const line=textLines(ctx,row[c],Math.max(18,widths[c]-12),fontSize,false);lines.push(line);height=Math.max(height,line.length*lineHeight+8)}return{sourceIndex:index+1,row,lines,height}});
+    const titleBlock=53,headerHeight=31,topLong=72,bottom=h-38,maxBody=h-topLong-titleBlock-headerHeight-24,segments=[];let current=[],height=0;
+    for(const row of rows){if(current.length&&height+row.height>maxBody){segments.push(current);current=[];height=0}current.push(row);height+=row.height}if(current.length||!rows.length)segments.push(current);
+    return{orientation,w,h,cols,fontSize,lineHeight,widths,header:data[0]||[],headerHeight,titleBlock,segments};
+  }
+
+  function buildPlan(models){const plan=[];for(const model of models.filter(p=>p.include)){const orientation=autoOrientation(model);if(model.type==="SIGN"){for(let copy=1;copy<=model.copies;copy++)plan.push({kind:"SIGN",model,orientation,copy})}else{const layout=computeTableLayout(model,orientation);for(let copy=1;copy<=model.copies;copy++)layout.segments.forEach((segment,part)=>plan.push({kind:"TABLE",model,orientation,copy,part,partCount:layout.segments.length,layout,segment}))}}return plan}
+
+  function baseCanvas(orientation){const {w,h}=pageSize(orientation),scale=2.25,canvas=document.createElement("canvas");canvas.width=Math.round(w*scale);canvas.height=Math.round(h*scale);const ctx=canvas.getContext("2d",{alpha:false});ctx.scale(scale,scale);ctx.fillStyle=COLORS.white;ctx.fillRect(0,0,w,h);ctx.textBaseline="middle";return{canvas,ctx,w,h,scale}}
+  function drawText(ctx,text,x,y,size,color=COLORS.text,bold=false,align="left",maxWidth){ctx.save();ctx.font=fontString(size,bold);ctx.fillStyle=color;ctx.textAlign=align;ctx.direction=containsArabic(text)?"rtl":"ltr";if(maxWidth)ctx.fillText(String(text??""),x,y,maxWidth);else ctx.fillText(String(text??""),x,y);ctx.restore()}
+  function drawWrapped(ctx,lines,x,y,w,h,size,lineHeight,color,bold=false,align="center"){ctx.save();ctx.font=fontString(size,bold);ctx.fillStyle=color;ctx.textAlign=align;ctx.textBaseline="middle";const total=lines.length*lineHeight,start=y+(h-total)/2+lineHeight/2;lines.forEach((line,i)=>{ctx.direction=containsArabic(line)?"rtl":"ltr";ctx.fillText(line,align==="left"?x+6:align==="right"?x+w-6:x+w/2,start+i*lineHeight,Math.max(1,w-10))});ctx.restore()}
+  function drawChrome(ctx,w,h,logo,pageNo,total){ctx.fillStyle=COLORS.navy;ctx.fillRect(0,0,w,50);ctx.fillStyle=COLORS.white;ctx.fillRect(27,5,31,40);ctx.drawImage(logo,29,7,27,36);drawText(ctx,"SIGMA FOR INDUSTRY & MINING",68,19,10,COLORS.white,true,"left");drawText(ctx,"سيجما للصناعة والتعدين",68,36,9,COLORS.white,true,"left");ctx.strokeStyle=COLORS.line;ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(28,h-29);ctx.lineTo(w-28,h-29);ctx.stroke();drawText(ctx,"Laboratory Management",28,h-16,7.5,COLORS.muted,false,"left");drawText(ctx,`Page ${pageNo} of ${total}`,w-28,h-16,7.5,COLORS.muted,false,"right")}
+  function titleGroupHeight(model,ctx,w,tableHeight){const titleLines=textLines(ctx,model.title,w-100,20,true),subLines=model.subtitle?textLines(ctx,model.subtitle,w-100,10,true):[];return{titleLines,subLines,height:titleLines.length*25+(subLines.length?subLines.length*14+7:0)+tableHeight+12}}
+  function renderSign(plan,logo,pageNo,total){const {canvas,ctx,w,h}=baseCanvas(plan.orientation);drawChrome(ctx,w,h,logo,pageNo,total);const panelW=w-90,panelH=Math.min(260,h-150),x=(w-panelW)/2,y=50+(h-50-30-panelH)/2;ctx.lineWidth=2;roundedRect(ctx,x,y,panelW,panelH,16,COLORS.ice,COLORS.teal);drawText(ctx,"LABORATORY AREA",w/2,y+39,11,COLORS.teal,true,"center");const titleSize=plan.model.title.length>48?27:plan.model.title.length>30?34:43,titleLines=textLines(ctx,plan.model.title,panelW-70,titleSize,true),lineHeight=titleSize*1.22,titleHeight=titleLines.length*lineHeight,subtitleY=y+panelH-43;drawWrapped(ctx,titleLines,x+25,y+(panelH-titleHeight)/2-4,panelW-50,titleHeight,titleSize,lineHeight,COLORS.navy,true,"center");if(plan.model.subtitle)drawText(ctx,plan.model.subtitle,w/2,subtitleY,14,COLORS.teal,true,"center");return canvas}
+  function renderTable(plan,logo,pageNo,total){const {canvas,ctx,w,h}=baseCanvas(plan.orientation),L=plan.layout,rowsHeight=plan.segment.reduce((s,r)=>s+r.height,0),tableHeight=L.headerHeight+rowsHeight,group=titleGroupHeight(plan.model,ctx,w,tableHeight),short=plan.partCount===1&&group.height<h-150,yStart=short?50+(h-50-30-group.height)/2:70;drawChrome(ctx,w,h,logo,pageNo,total);let y=yStart;drawWrapped(ctx,group.titleLines,50,y,w-100,group.titleLines.length*25,20,25,COLORS.navy,true,"center");y+=group.titleLines.length*25;if(group.subLines.length){drawWrapped(ctx,group.subLines,50,y+2,w-100,group.subLines.length*14,10,14,COLORS.teal,true,"center");y+=group.subLines.length*14+7}if(plan.partCount>1){drawText(ctx,`Part ${plan.part+1} of ${plan.partCount}`,w-32,y-10,7.5,COLORS.muted,false,"right")}
+    let x=32;for(let c=0;c<L.cols;c++){const cw=L.widths[c];ctx.fillStyle=COLORS.navy;ctx.fillRect(x,y,cw,L.headerHeight);ctx.strokeStyle=COLORS.white;ctx.lineWidth=.6;ctx.strokeRect(x,y,cw,L.headerHeight);const lines=textLines(ctx,L.header[c],cw-10,L.fontSize,true);drawWrapped(ctx,lines,x,y,cw,L.headerHeight,L.fontSize,L.lineHeight,COLORS.white,true,"center");x+=cw}y+=L.headerHeight;
+    plan.segment.forEach((row,ri)=>{x=32;for(let c=0;c<L.cols;c++){const cw=L.widths[c];ctx.fillStyle=ri%2?COLORS.zebra:COLORS.white;ctx.fillRect(x,y,cw,row.height);ctx.strokeStyle=COLORS.line;ctx.lineWidth=.6;ctx.strokeRect(x,y,cw,row.height);const value=row.row[c],numeric=typeof value==="number"||(/^[-+]?\d+(\.\d+)?%?$/.test(String(value).trim())&&String(value).trim()!=="");drawWrapped(ctx,row.lines[c],x,y,cw,row.height,L.fontSize,L.lineHeight,COLORS.text,false,numeric?"center":(c===1||L.cols<=2?"left":"center"));x+=cw}y+=row.height});return canvas}
+
+  function b64Bytes(dataUrl){const b64=dataUrl.split(",")[1],raw=atob(b64),out=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)out[i]=raw.charCodeAt(i);return out}
+  function bytesJoin(parts){const len=parts.reduce((s,p)=>s+p.length,0),out=new Uint8Array(len);let o=0;for(const part of parts){out.set(part,o);o+=part.length}return out}
+  function strBytes(s){return enc.encode(s)}
+  function makePdf(images){const objects=[null],pageObjects=[],contentObjects=[],imageObjects=[];let next=3;for(const item of images){pageObjects.push(next++);contentObjects.push(next++);imageObjects.push(next++)}objects[1]=strBytes("<< /Type /Catalog /Pages 2 0 R >>");objects[2]=strBytes(`<< /Type /Pages /Count ${images.length} /Kids [${pageObjects.map(n=>`${n} 0 R`).join(" ")}] >>`);for(let i=0;i<images.length;i++){const item=images[i],page=pageObjects[i],content=contentObjects[i],image=imageObjects[i],stream=`q ${item.w.toFixed(2)} 0 0 ${item.h.toFixed(2)} 0 0 cm /Im${i+1} Do Q\n`;objects[page]=strBytes(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${item.w.toFixed(2)} ${item.h.toFixed(2)}] /Resources << /XObject << /Im${i+1} ${image} 0 R >> >> /Contents ${content} 0 R >>`);objects[content]=strBytes(`<< /Length ${strBytes(stream).length} >>\nstream\n${stream}endstream`);objects[image]=bytesJoin([strBytes(`<< /Type /XObject /Subtype /Image /Width ${item.pxW} /Height ${item.pxH} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${item.bytes.length} >>\nstream\n`),item.bytes,strBytes("\nendstream")])}const head=strBytes("%PDF-1.4\n%SIGMA\n"),parts=[head],offsets=[0];let pos=head.length;for(let i=1;i<objects.length;i++){const pre=strBytes(`${i} 0 obj\n`),post=strBytes("\nendobj\n");offsets[i]=pos;parts.push(pre,objects[i],post);pos+=pre.length+objects[i].length+post.length}const xref=pos;let tail=`xref\n0 ${objects.length}\n0000000000 65535 f \n`;for(let i=1;i<objects.length;i++)tail+=`${String(offsets[i]).padStart(10,"0")} 00000 n \n`;tail+=`trailer\n<< /Size ${objects.length} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`;parts.push(strBytes(tail));return bytesJoin(parts)}
+  function download(bytes,name){const url=URL.createObjectURL(new Blob([bytes],{type:"application/pdf"})),a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}
+
+  async function generatePdf(){const button=$("#generate");button.disabled=true;try{const plan=buildPlan(pages);if(!plan.length)throw Error("اختر صفحة واحدة على الأقل.");setStatus(`جاري تجهيز ${plan.length} صفحة PDF...`);const logo=await loadImage(`data:image/jpeg;base64,${SIGMA_LOGO_B64}`),images=[];for(let i=0;i<plan.length;i++){setStatus(`جاري تجهيز الصفحة ${i+1} من ${plan.length}...`);await new Promise(r=>setTimeout(r,0));const canvas=plan[i].kind==="SIGN"?renderSign(plan[i],logo,i+1,plan.length):renderTable(plan[i],logo,i+1,plan.length),size=pageSize(plan[i].orientation),bytes=b64Bytes(canvas.toDataURL("image/jpeg",.94));images.push({bytes,w:size.w,h:size.h,pxW:canvas.width,pxH:canvas.height});canvas.width=1;canvas.height=1}const pdf=makePdf(images),date=new Date().toISOString().slice(0,10);download(pdf,`Sigma_Lab_Signage_${date}.pdf`);setStatus(`تم إنشاء PDF بنجاح: ${plan.length} صفحة، وكل جدول أو لوحة في صفحات مستقلة.`)}catch(error){console.error(error);setStatus(`تعذر إنشاء PDF: ${error.message}`,true)}finally{button.disabled=false}}
+
+  $("#file").addEventListener("change",async event=>{const file=event.target.files[0];if(!file)return;$("#generate").disabled=true;setStatus("جاري قراءة نموذج Excel...");try{pages=await readTemplate(file);renderCards();$("#generate").disabled=false;setStatus(`تمت قراءة ${pages.length} صفحة مستقلة. راجع الاتجاه وعدد النسخ ثم أنشئ PDF.`)}catch(error){console.error(error);pages=[];$("#pages").innerHTML='<div class="empty">تعذر قراءة النموذج.</div>';$("#count").textContent="0 صفحة";setStatus(error.message,true)}});
+  $("#generate").addEventListener("click",generatePdf);
+    // Equipment identification is a permanent asset key, not a QA document number.
+  const exportMode=document.createElement('select');
+  exportMode.id='exportMode';exportMode.setAttribute('aria-label','حجم اليافطات والبطاقات');
+  exportMode.innerHTML='<option value="wall">A4 أفقي للأجهزة والمناطق</option><option value="cards">بطاقات أجهزة 90 × 50 مم</option><option value="sheets">بطاقات أجهزة على A4 مع علامات قص</option><option value="both">A4 وبطاقة مستقلة لكل جهاز</option>';
+  $('#generate').before(exportMode);
+  const preset=document.createElement('button');preset.type='button';preset.className='secondary';preset.textContent='الأجهزة فقط';
+  preset.addEventListener('click',()=>{pages.forEach(p=>p.include=p.type==='EQUIPMENT'&&!p.locked);renderCards()});$('#generate').before(preset);
+  const areasButton=document.createElement('button');areasButton.type='button';areasButton.className='secondary';areasButton.textContent='المناطق فقط';
+  areasButton.addEventListener('click',()=>{pages.forEach(p=>p.include=p.type==='SIGN');exportMode.value='wall';renderCards()});$('#generate').before(areasButton);
+  const allButton=document.createElement('button');allButton.type='button';allButton.className='secondary';allButton.textContent='الأجهزة والمناطق';
+  allButton.addEventListener('click',()=>{pages.forEach(p=>p.include=(p.type==='SIGN'||p.type==='EQUIPMENT')&&!p.locked);renderCards()});$('#generate').before(allButton);
+  exportMode.addEventListener('change',()=>updateCount());
+  const originalReadTemplate=readTemplate;
+  function equipmentDate(value){
+    if(value===''||value===null||value===undefined)return '';
+    if(typeof value==='number'){
+      if(!Number.isFinite(value)||value<1||value>2958465)throw Error('تاريخ جهاز غير صالح');
+      const d=new Date(Date.UTC(1899,11,30)+Math.round(value)*86400000);
+      return `${String(d.getUTCDate()).padStart(2,'0')}/${String(d.getUTCMonth()+1).padStart(2,'0')}/${d.getUTCFullYear()}`;
+    }
+    const s=String(value).trim();let m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if(m)return `${m[3]}/${m[2]}/${m[1]}`;
+    if(/^\d{2}\/\d{2}\/\d{4}$/.test(s))return s;
+    throw Error('أدخل تاريخ الجهاز كتاريخ Excel أو dd/mm/yyyy، وليس رقماً نصياً.');
+  }
+  readTemplate=async function(file){
+    const existing=await originalReadTemplate(file);existing.forEach(p=>p.include=p.type==='SIGN');
+    const zip=new ZipReader(await file.arrayBuffer()),strings=zip.entries.has('xl/sharedStrings.xml')?parseSharedStrings(await zip.text('xl/sharedStrings.xml')):[];
+    const book=new DOMParser().parseFromString(await zip.text('xl/workbook.xml'),'application/xml'),rels=parseRelationships(await zip.text('xl/_rels/workbook.xml.rels')),ids=new Set(),equipment=[];
+    for(const sheet of book.getElementsByTagNameNS('*','sheet')){
+      const rid=sheet.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships','id')||sheet.getAttribute('r:id');
+      const doc=new DOMParser().parseFromString(await zip.text(normalizeTarget(rels.get(rid))),'application/xml'),cells=new Map();
+      for(const c of doc.getElementsByTagNameNS('*','c'))cells.set(c.getAttribute('r'),cellValue(c,strings));
+      if(String(cells.get('B2')||'').toUpperCase()!=='EQUIPMENT')continue;
+      const expected=['Equipment ID','Equipment Name','Model / Details','Legacy Code / Serial','Location','Print','Status','Last Check','Next Due','Record Reference'];
+      expected.forEach((h,i)=>{if(String(cells.get(`${String.fromCharCode(65+i)}9`)||'').trim()!==h)throw Error(`عنوان العمود ${String.fromCharCode(65+i)}9 يجب أن يكون ${h}`)});
+      const max=Math.max(...[...cells.keys()].map(r=>cellRC(r)?.row||0));
+      for(let r=10;r<=max;r++){
+        const val=c=>String(cells.get(`${c}${r}`)??'').trim();
+        if(!val('A')&&!val('B'))continue;
+        const id=val('A'),title=val('B');
+        if(!id||!title)throw Error(`اسم الجهاز أو رقمه ناقص في الصف ${r}.`);
+        if(ids.has(id.toUpperCase()))throw Error(`رقم جهاز مكرر ${id}. يجب أن يكون لكل وحدة رقم فريد.`);
+        ids.add(id.toUpperCase());
+        if(!/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(id))throw Error(`رقم الجهاز ${id} غير صالح؛ استخدم حروفاً وأرقاماً وشرطة.`);
+        if(containsArabic(title))throw Error(`اسم الجهاز ${id} يجب أن يكون باللغة الإنجليزية.`);
+        if(!['yes','no'].includes(val('F').toLowerCase()))throw Error(`اختر Yes أو No في عمود Print للصف ${r}.`);
+        const locked=val('F').toLowerCase()!=='yes';
+        equipment.push({sheetName:sheet.getAttribute('name'),sourceRow:r,type:'EQUIPMENT',title,id,subtitle:val('E')||'Laboratory',model:val('C'),legacy:val('D'),status:val('G'),last:equipmentDate(cells.get(`H${r}`)),due:equipmentDate(cells.get(`I${r}`)),record:val('J')||'Equipment record',note:val('L'),locked,include:!locked,orientation:'LANDSCAPE',copies:1,data:[]});
+      }
+    }
+    return [...equipment,...existing];
+  };
+  const originalRenderCards=renderCards;
+  renderCards=function(){
+    originalRenderCards();
+    [...$('#pages').children].forEach((card,i)=>{
+      const p=pages[i];if(p?.type!=='EQUIPMENT')return;
+      const meta=card.querySelector('.meta');meta.textContent=`${p.id} · ${p.model||p.subtitle}${p.locked?' — الطباعة موقوفة حتى استكمال التعريف':''}`;
+      if(p.note){const note=document.createElement('div');note.className='note';note.textContent=p.note;meta.after(note);}
+      card.querySelector('.orientation').disabled=true;
+      if(p.locked){card.querySelector('.include').disabled=true;card.classList.add('off');}
+    });
+  };
+  pageSize=function(orientation){return orientation==='CARD'?{w:90*72/25.4,h:50*72/25.4}:orientation==='LANDSCAPE'?{w:841.89,h:595.28}:{w:595.28,h:841.89}};
+  const originalBuildPlan=buildPlan;
+  buildPlan=function(models){
+    const mode=exportMode.value,eq=[];
+    for(const m of models.filter(p=>p.include&&p.type==='EQUIPMENT'&&!p.locked))for(let c=1;c<=m.copies;c++)eq.push(m);
+    const plan=[];
+    if(mode==='sheets'){
+      for(let i=0;i<eq.length;i+=10)plan.push({kind:'EQUIPMENT_SHEET',orientation:'PORTRAIT',items:eq.slice(i,i+10)});
+    }else for(const model of eq){
+      if(mode==='wall'||mode==='both')plan.push({kind:'EQUIPMENT',orientation:'LANDSCAPE',model});
+      if(mode==='cards'||mode==='both')plan.push({kind:'EQUIPMENT',orientation:'CARD',model});
+    }
+    if(mode==='wall'||mode==='both')plan.push(...originalBuildPlan(models.filter(p=>p.type!=='EQUIPMENT')));
+    return plan;
+  };
+  updateCount=function(){const n=buildPlan(pages).length,held=pages.filter(p=>p.locked).length;$('#count').textContent=`${n} صفحة${held?` · ${held} تعريفاً موقوف الطباعة`:''}`};
+  function fitTitle(ctx,text,width,maxSize,maxLines){let size=maxSize,lines;do{lines=textLines(ctx,text,width,size,true);if(lines.length<=maxLines)break;size-=.5}while(size>7);return {size,lines,lineHeight:size*1.2};}
+  function paintEquipment(ctx,m,x,y,w,h,small){
+    ctx.save();ctx.translate(x,y);ctx.fillStyle='#FFFFFF';ctx.fillRect(0,0,w,h);ctx.strokeStyle=COLORS.teal;ctx.lineWidth=small?.7:1.5;ctx.strokeRect(.5,.5,w-1,h-1);
+    const pad=small?10:34,bar=small?18:42;
+    ctx.fillStyle=COLORS.navy;ctx.fillRect(0,0,w,bar);drawText(ctx,'SIGMA LABORATORY',pad,bar/2,small?7:14,COLORS.white,true,'left');
+    drawText(ctx,'EQUIPMENT ID',w-pad,bar/2,small?6:11,COLORS.white,false,'right');
+    drawText(ctx,m.id,w/2,small?34:88,small?14:30,COLORS.navy,true,'center');
+    const title=fitTitle(ctx,m.title,w-pad*2,small?12:39,2),titleY=small?46:125,titleH=small?32:100;
+    drawWrapped(ctx,title.lines,pad,titleY,w-pad*2,titleH,title.size,title.lineHeight,COLORS.text,true,'center');
+    if(!small){
+      if(m.model)drawText(ctx,m.model,w/2,250,21,COLORS.teal,false,'center',w-pad*2);
+      drawText(ctx,m.subtitle,w/2,291,16,COLORS.muted,false,'center',w-pad*2);
+      if(m.legacy)drawText(ctx,`Legacy / Serial: ${m.legacy}`,w/2,329,12,COLORS.muted,false,'center',w-pad*2);
+      drawText(ctx,'Check equipment status before use',w/2,h-32,11,COLORS.muted,false,'center');
+    }else{
+      const info=[m.model,m.legacy?`Legacy / S/N: ${m.legacy}`:''].filter(Boolean).join(' | ');
+      if(info)drawText(ctx,info,pad,84,6.2,COLORS.muted,false,'left',w-pad*2);
+      const state=m.status?`Status: ${m.status}`:'Status / validity: see equipment record';
+      drawText(ctx,state,pad,99,7,COLORS.text,true,'left',w-pad*2);
+      if(m.last||m.due)drawText(ctx,`Checked: ${m.last||'--'}    Due: ${m.due||'see record'}`,pad,112,6.4,COLORS.text,false,'left',w-pad*2);
+      else drawText(ctx,m.record,pad,112,6.4,COLORS.muted,false,'left',w-pad*2);
+      drawText(ctx,'Check status before use',pad,h-10,6.4,COLORS.muted,false,'left');
+    }
+    ctx.restore();
+  }
+  function renderEquipment(plan){
+    const {canvas,ctx,w,h}=baseCanvas(plan.orientation);
+    if(plan.kind==='EQUIPMENT_SHEET'){
+      const cw=90*72/25.4,ch=50*72/25.4,gx=8*72/25.4,gy=5*72/25.4,x0=(w-2*cw-gx)/2,y0=(h-5*ch-4*gy)/2;
+      plan.items.forEach((m,i)=>{const x=x0+(i%2)*(cw+gx),y=y0+Math.floor(i/2)*(ch+gy);paintEquipment(ctx,m,x,y,cw,ch,true);ctx.strokeStyle='#888';ctx.lineWidth=.3;for(const [cx,cy] of [[x,y],[x+cw,y],[x,y+ch],[x+cw,y+ch]]){ctx.beginPath();ctx.moveTo(cx-3,cy);ctx.lineTo(cx+3,cy);ctx.moveTo(cx,cy-3);ctx.lineTo(cx,cy+3);ctx.stroke()}});
+    }else if(plan.orientation==='CARD')paintEquipment(ctx,plan.model,0,0,w,h,true);
+    else paintEquipment(ctx,plan.model,34,38,w-68,h-76,false);
+    return canvas;
+  }
+  // Use higher resolution for actual-size business cards, and retain the
+  // original local-only canvas PDF writer; no upload or CDN is required.
+  const originalBaseCanvas=baseCanvas;
+  baseCanvas=function(orientation){
+    if(orientation!=='CARD')return originalBaseCanvas(orientation);
+    const {w,h}=pageSize(orientation),scale=4,canvas=document.createElement('canvas');canvas.width=Math.round(w*scale);canvas.height=Math.round(h*scale);const ctx=canvas.getContext('2d',{alpha:false});ctx.scale(scale,scale);ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);ctx.textBaseline='middle';return {canvas,ctx,w,h,scale};
+  };
+  generatePdf=async function(){
+    const button=$('#generate');button.disabled=true;
+    try{
+      const plan=buildPlan(pages);if(!plan.length)throw Error('اختر جهازاً أو صفحة تلائم نوع الإخراج المطلوب.');
+      const logo=await loadImage(`data:image/jpeg;base64,${SIGMA_LOGO_B64}`),images=[];
+      for(let i=0;i<plan.length;i++){
+        setStatus(`جاري تجهيز الصفحة ${i+1} من ${plan.length}...`);await new Promise(r=>setTimeout(r,0));
+        const p=plan[i],canvas=p.kind.startsWith('EQUIPMENT')?renderEquipment(p):p.kind==='SIGN'?renderSign(p,logo,i+1,plan.length):renderTable(p,logo,i+1,plan.length),size=pageSize(p.orientation);
+        images.push({bytes:b64Bytes(canvas.toDataURL('image/jpeg',.94)),w:size.w,h:size.h,pxW:canvas.width,pxH:canvas.height});canvas.width=1;canvas.height=1;
+      }
+      download(makePdf(images),`Sigma_Lab_${exportMode.value}_${new Date().toISOString().slice(0,10)}.pdf`);setStatus(`تم إنشاء ${plan.length} صفحة. اطبع البطاقات بمقياس 100% دون Fit to page.`);
+    }catch(e){console.error(e);setStatus(e.message,true)}finally{button.disabled=false}
+  };
+  // Rebind because the original button held the previous function reference.
+  const oldButton=$('#generate'),newButton=oldButton.cloneNode(true);oldButton.replaceWith(newButton);newButton.addEventListener('click',generatePdf);
+  const help=document.createElement('div');help.className='rule';help.textContent='رقم LAB-EQ ثابت لكل جهاز ومربوط بكشف الحصر. الطباعة لا تعني أن الجهاز معاير. استكمل الحالة والتواريخ من السجل فقط، وثبّت الرقم على الوحدة الفعلية قبل الاستخدام.';document.querySelector('.rules').appendChild(help);
+
+</script>
+</body>
+</html>
